@@ -6,6 +6,8 @@ const getAllShows = async (theatreId) => {
             s.show_id,
             s.theatre_id,
             s.title,
+            s.duration,
+            s.rating,
             s.show_time,
             s.available_seats,
             t.name AS theatre_name,
