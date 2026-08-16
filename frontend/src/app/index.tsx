@@ -21,6 +21,8 @@ type Show = {
   show_id: number;
   theatre_id: number;
   title: string;
+  duration?: number;
+  rating?: string;
   show_time?: string;
   available_seats?: number;
   theatre_name?: string;
@@ -367,6 +369,8 @@ export default function HomeScreen() {
                 <Text style={styles.showTitle}>{show.title}</Text>
                 {show.theatre_name ? <Text>Cinema: {show.theatre_name}</Text> : null}
                 {show.theatre_location ? <Text>Location: {show.theatre_location}</Text> : null}
+                {show.duration !== undefined && show.duration !== null ? <Text>Duration: {show.duration} minutes</Text> : null}
+                {show.rating ? <Text>Rating: {show.rating}</Text> : null}
                 {show.show_time ? <Text>Show Time: {String(show.show_time)}</Text> : null}
                 {show.available_seats !== undefined ? <Text>Available Seats: {show.available_seats}</Text> : null}
 
