@@ -5,11 +5,18 @@ const isValidSeatCount = (seats) => {
     return Number.isInteger(value) && value > 0;
 };
 
+const sendError = (res, error) => {
+    res.status(error.statusCode || 500).json({
+        message: error.message || "Reservation operation failed"
+    });
+};
+
 const createReservation = async (req, res) => {
     try {
         const { show_id, seats } = req.body;
+        const showId = Number(show_id);
 
-        if (!show_id || !isValidSeatCount(seats)) {
+        if (!Number.isInteger(showId) || showId <= 0 || !isValidSeatCount(seats)) {
             return res.status(400).json({
                 message: "Show and a positive number of seats are required"
             });
@@ -17,7 +24,7 @@ const createReservation = async (req, res) => {
 
         await reservationService.createReservation(
             req.user.id,
-            show_id,
+            showId,
             Number(seats)
         );
 
@@ -25,7 +32,7 @@ const createReservation = async (req, res) => {
             message: "Reservation created successfully"
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -34,7 +41,7 @@ const getReservations = async (req, res) => {
         const reservations = await reservationService.getReservations(req.user.id);
         res.json(reservations);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -61,7 +68,7 @@ const updateReservation = async (req, res) => {
 
         res.json({ message: "Reservation updated successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -76,7 +83,7 @@ const deleteReservation = async (req, res) => {
 
         res.json({ message: "Reservation cancelled successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
