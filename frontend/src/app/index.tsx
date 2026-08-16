@@ -8,7 +8,7 @@ import {
   ScrollView
 } from "react-native";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "http://10.0.2.2:3000";
 
 export default function HomeScreen() {
   const [email, setEmail] = useState("nikos@test.com");
