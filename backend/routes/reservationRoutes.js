@@ -6,11 +6,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/", authMiddleware, reservationController.createReservation);
 router.get("/", authMiddleware, reservationController.getReservations);
-
-router.delete(
-    "/:id",
-    authMiddleware,
-    reservationController.deleteReservation
-);
+router.put("/:id", authMiddleware, reservationController.updateReservation);
+router.delete("/:id", authMiddleware, reservationController.deleteReservation);
 
 module.exports = router;
