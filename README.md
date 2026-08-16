@@ -1,200 +1,156 @@
 # Theatre Booking App
 
-Εφαρμογή κράτησης θέσεων σε κινηματογράφο, η οποία αναπτύχθηκε στο πλαίσιο της εργασίας του μαθήματος **CN6035 - Mobile & Distributed Systems**.
+Εφαρμογή κράτησης θέσεων σε κινηματογράφο για το μάθημα **CN6035 - Mobile & Distributed Systems**.
 
-Η εφαρμογή αποτελείται από:
+Η εφαρμογή υλοποιεί mobile frontend, REST backend και σχεσιακή βάση δεδομένων:
 
-* **Frontend:** React Native με Expo
-* **Backend:** Node.js και Express
-* **Βάση Δεδομένων:** MariaDB
-* **Authentication:** JWT (JSON Web Token)
+- **Frontend:** React Native + Expo + TypeScript
+- **Backend:** Node.js + Express
+- **Database:** MariaDB
+- **Authentication:** JWT
 
-## Λειτουργίες εφαρμογής
+## Λειτουργίες
 
-Η εφαρμογή παρέχει τις παρακάτω βασικές λειτουργίες:
-
-* Εγγραφή νέου χρήστη.
-* Σύνδεση χρήστη.
-* Authentication μέσω JWT.
-* Προβολή διαθέσιμων προβολών.
-* Δημιουργία κράτησης.
-* Προβολή των κρατήσεων του χρήστη.
-* Διαχείριση των δεδομένων μέσω REST API.
-* Αποθήκευση χρηστών, προβολών, κινηματογράφων και κρατήσεων σε MariaDB.
+- Εγγραφή νέου χρήστη με όνομα, email και password.
+- Σύνδεση χρήστη και έκδοση JWT authentication token.
+- Προβολή λίστας κινηματογράφων.
+- Αναζήτηση κινηματογράφου με βάση **όνομα ή τοποθεσία**.
+- Επιλογή κινηματογράφου και προβολή των ταινιών/προβολών του.
+- Προβολή ώρας προβολής και διαθέσιμων θέσεων.
+- Επιλογή αριθμού θέσεων και δημιουργία κράτησης.
+- Προβολή ιστορικού κρατήσεων του συνδεδεμένου χρήστη.
+- Τροποποίηση αριθμού θέσεων υπάρχουσας κράτησης.
+- Ακύρωση/διαγραφή κράτησης.
+- Αυτόματη ενημέρωση διαθέσιμων θέσεων κατά τη δημιουργία, τροποποίηση και ακύρωση κράτησης.
+- Προστασία των reservation endpoints μέσω JWT.
 
 ---
 
-# Δομή Project
+## Δομή Project
 
 ```text
 TheatreBookingApp/
-│
 ├── backend/
 │   ├── config/
 │   ├── controllers/
 │   ├── middleware/
 │   ├── routes/
 │   ├── services/
-│   ├── .env
+│   ├── .env.example
 │   ├── package.json
 │   └── server.js
-│
 ├── database/
 │   └── setup.sql
-│
 ├── frontend/
 │   ├── src/
 │   ├── assets/
 │   ├── package.json
 │   └── app.json
-│
 └── README.md
 ```
 
 ---
 
-# Απαιτούμενα Προγράμματα
+## Απαιτούμενα Προγράμματα
 
-Πριν την εκτέλεση της εφαρμογής πρέπει να είναι εγκατεστημένα:
+Πριν την εκτέλεση χρειάζονται:
 
-1. **Node.js και npm**
-2. **MariaDB Server**
-3. **Android Studio** με Android Emulator
-4. **Git**
+1. **Git**
+2. **Node.js + npm**
+3. **MariaDB Server**
+4. **Android Studio** με Android Emulator
 
-Το frontend χρησιμοποιεί **Expo**.
+Το frontend χρησιμοποιεί Expo και τα dependencies εγκαθίστανται μέσω npm.
 
 ---
 
-# 1. Λήψη του Project
-
-Ανοίξτε PowerShell ή Command Prompt και εκτελέστε:
+## 1. Λήψη του Project
 
 ```bash
 git clone https://github.com/BillMagou/TheatreBookingApp.git
-```
-
-Στη συνέχεια:
-
-```bash
 cd TheatreBookingApp
 ```
 
 ---
 
-# 2. Δημιουργία Βάσης Δεδομένων
+## 2. Δημιουργία Βάσης Δεδομένων
 
-Το project περιλαμβάνει το αρχείο:
+Το αρχείο `database/setup.sql` δημιουργεί αυτόματα:
 
-```text
-database/setup.sql
-```
+- τη βάση `theatre_booking_db`
+- τους πίνακες `users`, `theatres`, `shows`, `reservations`
+- foreign-key relationships
+- indexes για συχνά queries
+- δοκιμαστικούς κινηματογράφους και προβολές
 
-Το συγκεκριμένο αρχείο δημιουργεί τη βάση:
-
-```text
-theatre_booking_db
-```
-
-καθώς και τους απαραίτητους πίνακες:
-
-* `users`
-* `theatres`
-* `shows`
-* `reservations`
-
-Περιλαμβάνονται επίσης δοκιμαστικά δεδομένα για την εκτέλεση της εφαρμογής.
-
-Από **MariaDB Command Prompt**, μεταβείτε στον φάκελο του project:
+Από **MariaDB Command Prompt**:
 
 ```cmd
 cd C:\path\to\TheatreBookingApp
-```
-
-και εκτελέστε:
-
-```cmd
 mariadb -u root -p < database\setup.sql
 ```
 
-Στη συνέχεια εισάγετε το password του χρήστη `root` της MariaDB.
+Έπειτα εισάγετε το root password της MariaDB.
+
+Το script χρησιμοποιεί `IF NOT EXISTS` όπου είναι δυνατό ώστε να μπορεί να εκτελεστεί ξανά χωρίς να διαγράφει υπάρχοντα δεδομένα.
 
 ---
 
-# 3. Ρύθμιση Backend
+## 3. Ρύθμιση Backend
 
-Το backend χρησιμοποιεί αρχείο `.env`.
+Στον φάκελο `backend` υπάρχει το αρχείο `.env.example`.
 
-Το αρχείο πρέπει να βρίσκεται στο:
+Δημιουργήστε ένα νέο αρχείο:
 
 ```text
 backend/.env
 ```
 
-Παράδειγμα ρυθμίσεων:
+με βάση το `.env.example`:
 
 ```env
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=1234
+DB_PASSWORD=YOUR_MARIADB_PASSWORD
 DB_NAME=theatre_booking_db
 DB_PORT=3306
-
 PORT=3000
-JWT_SECRET=mysecretkey
+JWT_SECRET=change_this_secret_key
 ```
 
-**Σημαντικό:** Το `DB_PASSWORD` πρέπει να αντικατασταθεί με το password που έχει οριστεί για τον χρήστη `root` κατά την εγκατάσταση της MariaDB.
+Αλλάξτε το `DB_PASSWORD` ώστε να είναι το password που ορίστηκε κατά την εγκατάσταση της MariaDB. Το `JWT_SECRET` μπορεί επίσης να αλλαχθεί σε οποιαδήποτε ιδιωτική τιμή.
 
 ---
 
-# 4. Εκκίνηση Backend
+## 4. Εκκίνηση Backend
 
-Ανοίξτε ένα terminal και μεταβείτε στον φάκελο:
+Ανοίξτε terminal:
 
 ```bash
 cd TheatreBookingApp/backend
-```
-
-Εγκαταστήστε τα dependencies:
-
-```bash
 npm install
-```
-
-και ξεκινήστε τον server:
-
-```bash
 npm start
 ```
 
-Εφόσον η εκκίνηση πραγματοποιηθεί σωστά, θα εμφανιστεί:
+Αναμενόμενο μήνυμα:
 
 ```text
 Server running on http://localhost:3000
 ```
 
-Το συγκεκριμένο terminal πρέπει να παραμείνει ανοιχτό κατά τη χρήση της εφαρμογής.
+Για γρήγορο έλεγχο της βάσης, το `GET /` επιστρέφει μήνυμα `Database connected` όταν η σύνδεση MariaDB λειτουργεί.
+
+Αφήστε αυτό το terminal ανοιχτό.
 
 ---
 
-# 5. Εκκίνηση Frontend
+## 5. Εκκίνηση Frontend
 
-Ανοίξτε **δεύτερο terminal** και μεταβείτε στον φάκελο:
+Σε δεύτερο terminal:
 
 ```bash
 cd TheatreBookingApp/frontend
-```
-
-Εγκαταστήστε τα dependencies:
-
-```bash
 npm install
-```
-
-Στη συνέχεια ξεκινήστε το Expo:
-
-```bash
 npx expo start
 ```
 
@@ -202,156 +158,145 @@ npx expo start
 
 ---
 
-# 6. Εκτέλεση σε Android Emulator
+## 6. Android Emulator
 
-Ανοίξτε το **Android Studio** και εκκινήστε έναν Android Emulator μέσω του Device Manager.
+1. Ανοίξτε Android Studio.
+2. Εκκινήστε Android Emulator από το Device Manager.
+3. Επιστρέψτε στο terminal του Expo.
+4. Πατήστε `a` για άνοιγμα της εφαρμογής στον Android emulator.
 
-Για παράδειγμα μπορεί να χρησιμοποιηθεί συσκευή Pixel με εγκατεστημένο Android API.
-
-Αφού ο emulator έχει ξεκινήσει και το Expo εκτελείται, στο terminal του Expo πατήστε:
-
-```text
-a
-```
-
-Το Expo θα ανοίξει την εφαρμογή στον Android Emulator.
-
-### Σύνδεση Android Emulator με Backend
-
-Για εκτέλεση μέσω Android Emulator, το frontend χρησιμοποιεί:
+Το frontend χρησιμοποιεί:
 
 ```text
 http://10.0.2.2:3000
 ```
 
-αντί για:
-
-```text
-http://localhost:3000
-```
-
-Το `10.0.2.2` επιτρέπει στον Android Emulator να επικοινωνεί με τον backend server που εκτελείται στον υπολογιστή.
+Το `10.0.2.2` είναι η ειδική διεύθυνση με την οποία ο Android Emulator επικοινωνεί με τον localhost του υπολογιστή.
 
 ---
 
-# 7. Χρήση της Εφαρμογής
+## 7. Δοκιμή της Εφαρμογής
 
-Μετά την εκκίνηση εμφανίζεται η οθόνη **Theatre Booking Login**.
+### Register
 
-### Δημιουργία λογαριασμού
+Πατήστε **Register New User** και συμπληρώστε:
 
-Επιλέξτε:
+- Name
+- Email
+- Password
 
-```text
-Register New User
-```
-
-και συμπληρώστε:
-
-* Όνομα
-* Email
-* Password
-
-Μετά την επιτυχημένη εγγραφή μπορείτε να επιστρέψετε στην οθόνη Login.
+Μετά επιστρέψτε στο Login.
 
 ### Login
 
-Εισάγετε το email και το password του λογαριασμού.
+Συνδεθείτε με το email/password του χρήστη.
 
-Μετά την επιτυχημένη σύνδεση εμφανίζονται οι διαθέσιμες προβολές.
+### Cinemas
 
-### Κράτηση
+Μετά το login εμφανίζονται οι κινηματογράφοι. Στο πεδίο αναζήτησης μπορείτε να γράψετε μέρος του ονόματος ή της τοποθεσίας, π.χ. `Athens`, `Marousi` ή `Odeon`.
 
-Από τη λίστα διαθέσιμων προβολών μπορείτε να επιλέξετε:
+Πατώντας έναν κινηματογράφο εμφανίζονται μόνο οι προβολές του. Η επιλογή **All Cinemas** εμφανίζει όλες τις προβολές.
 
-```text
-Reserve
-```
+### Reservation
 
-για τη δημιουργία κράτησης.
+Σε κάθε προβολή εμφανίζονται:
 
-### Προβολή κρατήσεων
+- τίτλος ταινίας
+- κινηματογράφος
+- τοποθεσία
+- ώρα προβολής
+- διαθέσιμες θέσεις
 
-Η επιλογή:
+Εισάγετε αριθμό θέσεων και πατήστε **Reserve**.
 
-```text
-My Reservations
-```
+### My Reservations
 
-εμφανίζει τις κρατήσεις του συνδεδεμένου χρήστη.
+Πατήστε **My Reservations** για το ιστορικό κρατήσεων.
 
----
+Για κάθε κράτηση μπορείτε:
 
-# REST API
+- να αλλάξετε τον αριθμό θέσεων και να πατήσετε **Update Reservation**
+- να πατήσετε **Cancel Reservation** για ακύρωση
 
-Το backend υλοποιείται με **Node.js και Express** και χρησιμοποιεί REST API για την επικοινωνία με το frontend.
-
-Η εφαρμογή υποστηρίζει λειτουργίες για:
-
-* Register
-* Login
-* Προβολή διαθέσιμων δεδομένων
-* Δημιουργία κρατήσεων
-* Προβολή κρατήσεων χρήστη
-
-Η πρόσβαση στις λειτουργίες που απαιτούν authentication προστατεύεται μέσω **JWT**.
+Οι διαθέσιμες θέσεις ελέγχονται στο backend και ενημερώνονται με database transaction.
 
 ---
 
-# Βάση Δεδομένων
+## REST API
 
-Χρησιμοποιείται **MariaDB**.
+Υποστηρίζονται τόσο τα αρχικά routes του project όσο και aliases που αντιστοιχούν στην εκφώνηση.
 
-Η βάση δεδομένων περιλαμβάνει τους πίνακες:
+| Method | Endpoint | Περιγραφή |
+|---|---|---|
+| POST | `/register` | Δημιουργία χρήστη |
+| POST | `/login` | Login και JWT token |
+| POST | `/users/register` | Εναλλακτικό register route |
+| POST | `/users/login` | Εναλλακτικό login route |
+| GET | `/cinemas` | Λίστα κινηματογράφων |
+| GET | `/cinemas?search=Athens` | Αναζήτηση βάσει ονόματος/τοποθεσίας |
+| GET | `/theatres` | Εναλλακτικό cinema route |
+| GET | `/movies` | Όλες οι προβολές |
+| GET | `/movies?theatre_id=1` | Προβολές συγκεκριμένου κινηματογράφου |
+| GET | `/shows` | Εναλλακτικό movies route |
+| POST | `/reservations` | Δημιουργία κράτησης (JWT) |
+| GET | `/reservations` | Κρατήσεις χρήστη (JWT) |
+| GET | `/user/reservations` | Κρατήσεις χρήστη, route της εκφώνησης (JWT) |
+| PUT | `/reservations/:id` | Τροποποίηση κράτησης (JWT) |
+| DELETE | `/reservations/:id` | Ακύρωση κράτησης (JWT) |
+
+---
+
+## Database
 
 ### users
 
-Αποθηκεύει τους εγγεγραμμένους χρήστες.
+Αποθηκεύει στοιχεία χρηστών. Τα passwords αποθηκεύονται hashed από το backend.
 
 ### theatres
 
-Αποθηκεύει τα διαθέσιμα θέατρα/κινηματογράφους.
+Αποθηκεύει όνομα, τοποθεσία και περιγραφή κινηματογράφου.
 
 ### shows
 
-Αποθηκεύει τις διαθέσιμες προβολές.
+Συνδέεται με `theatres` και αποθηκεύει τίτλο ταινίας, ώρα προβολής και διαθέσιμες θέσεις.
 
 ### reservations
 
-Αποθηκεύει τις κρατήσεις των χρηστών και συνδέεται με τους αντίστοιχους χρήστες και προβολές.
+Συνδέει `users` με `shows` και αποθηκεύει τον αριθμό θέσεων της κράτησης.
+
+Υπάρχουν foreign keys και indexes για τα βασικά πεδία αναζήτησης και σχέσεων.
 
 ---
 
-# Τεχνολογίες
+## Τεχνολογίες
 
-* React Native
-* Expo
-* TypeScript / JavaScript
-* Node.js
-* Express
-* MariaDB
-* JWT
-* REST API
-* Git / GitHub
+- React Native
+- Expo
+- TypeScript / JavaScript
+- Node.js
+- Express
+- MariaDB
+- JWT
+- bcrypt
+- REST API
+- Git / GitHub
 
 ---
 
-# Γρήγορη Εκτέλεση
+## Γρήγορη Εκτέλεση μετά το αρχικό Setup
 
-Μετά την αρχική εγκατάσταση και δημιουργία της βάσης, για κάθε νέα εκτέλεση της εφαρμογής απαιτούνται μόνο δύο terminals.
-
-**Terminal 1 — Backend**
+**Terminal 1:**
 
 ```bash
 cd TheatreBookingApp/backend
 npm start
 ```
 
-**Terminal 2 — Frontend**
+**Terminal 2:**
 
 ```bash
 cd TheatreBookingApp/frontend
 npx expo start
 ```
 
-Στη συνέχεια ανοίξτε τον Android Emulator και πατήστε `a` στο terminal του Expo.
+Μετά ανοίξτε τον Android Emulator και πατήστε `a` στο terminal του Expo.
