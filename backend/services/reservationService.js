@@ -1,40 +1,41 @@
 const pool = require("../config/db");
 
 const createReservation = async (userId, showId, seats) => {
-
-    const result = await pool.query(
+    return await pool.query(
         "INSERT INTO reservations (user_id, show_id, seats) VALUES (?, ?, ?)",
         [userId, showId, seats]
     );
-
-    return result;
 };
 
 const getReservations = async (userId) => {
-    const rows = await pool.query(
-        "SELECT * FROM reservations WHERE user_id = ?",
+    return await pool.query(
+        `SELECT r.reservation_id, r.user_id, r.show_id, r.seats,
+                s.title, s.show_time
+         FROM reservations r
+         JOIN shows s ON r.show_id = s.show_id
+         WHERE r.user_id = ?
+         ORDER BY s.show_time ASC`,
         [userId]
     );
-
-    return rows;
 };
-const deleteReservation = async (reservationId) => {
 
+const updateReservation = async (userId, reservationId, seats) => {
     return await pool.query(
-        "DELETE FROM reservations WHERE reservation_id = ?",
-        [reservationId]
+        "UPDATE reservations SET seats = ? WHERE reservation_id = ? AND user_id = ?",
+        [seats, reservationId, userId]
     );
-
 };
 
-
-
-module.exports = {
-    createReservation,
-    getReservations
+const deleteReservation = async (userId, reservationId) => {
+    return await pool.query(
+        "DELETE FROM reservations WHERE reservation_id = ? AND user_id = ?",
+        [reservationId, userId]
+    );
 };
+
 module.exports = {
     createReservation,
     getReservations,
+    updateReservation,
     deleteReservation
 };
