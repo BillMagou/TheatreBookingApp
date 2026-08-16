@@ -19,12 +19,18 @@ CREATE TABLE IF NOT EXISTS shows (
     show_id INT AUTO_INCREMENT PRIMARY KEY,
     theatre_id INT NOT NULL,
     title VARCHAR(150) NOT NULL,
+    duration INT,
+    rating VARCHAR(20),
     show_time DATETIME NOT NULL,
     available_seats INT NOT NULL DEFAULT 100,
     CONSTRAINT fk_shows_theatre
         FOREIGN KEY (theatre_id) REFERENCES theatres(theatre_id)
         ON DELETE CASCADE
 );
+
+-- Upgrade older copies of the database without deleting existing data.
+ALTER TABLE shows ADD COLUMN IF NOT EXISTS duration INT NULL AFTER title;
+ALTER TABLE shows ADD COLUMN IF NOT EXISTS rating VARCHAR(20) NULL AFTER duration;
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservation_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,8 +69,8 @@ WHERE NOT EXISTS (
     SELECT 1 FROM theatres WHERE name = 'Cineplexx Thessaloniki' AND location = 'Thessaloniki'
 );
 
-INSERT INTO shows (theatre_id, title, show_time, available_seats)
-SELECT theatre_id, 'Inception', '2026-08-20 20:30:00', 100
+INSERT INTO shows (theatre_id, title, duration, rating, show_time, available_seats)
+SELECT theatre_id, 'Inception', 148, 'PG-13', '2026-08-20 20:30:00', 100
 FROM theatres
 WHERE name = 'Odeon Athens' AND location = 'Athens'
   AND NOT EXISTS (
@@ -72,8 +78,8 @@ WHERE name = 'Odeon Athens' AND location = 'Athens'
   )
 LIMIT 1;
 
-INSERT INTO shows (theatre_id, title, show_time, available_seats)
-SELECT theatre_id, 'Interstellar', '2026-08-21 21:00:00', 120
+INSERT INTO shows (theatre_id, title, duration, rating, show_time, available_seats)
+SELECT theatre_id, 'Interstellar', 169, 'PG-13', '2026-08-21 21:00:00', 120
 FROM theatres
 WHERE name = 'Village Mall' AND location = 'Marousi'
   AND NOT EXISTS (
@@ -81,11 +87,16 @@ WHERE name = 'Village Mall' AND location = 'Marousi'
   )
 LIMIT 1;
 
-INSERT INTO shows (theatre_id, title, show_time, available_seats)
-SELECT theatre_id, 'The Dark Knight', '2026-08-22 19:30:00', 90
+INSERT INTO shows (theatre_id, title, duration, rating, show_time, available_seats)
+SELECT theatre_id, 'The Dark Knight', 152, 'PG-13', '2026-08-22 19:30:00', 90
 FROM theatres
 WHERE name = 'Cineplexx Thessaloniki' AND location = 'Thessaloniki'
   AND NOT EXISTS (
       SELECT 1 FROM shows WHERE title = 'The Dark Knight' AND show_time = '2026-08-22 19:30:00'
   )
 LIMIT 1;
+
+-- Ensure existing demo rows also receive movie information.
+UPDATE shows SET duration = 148, rating = 'PG-13' WHERE title = 'Inception' AND (duration IS NULL OR rating IS NULL);
+UPDATE shows SET duration = 169, rating = 'PG-13' WHERE title = 'Interstellar' AND (duration IS NULL OR rating IS NULL);
+UPDATE shows SET duration = 152, rating = 'PG-13' WHERE title = 'The Dark Knight' AND (duration IS NULL OR rating IS NULL);
